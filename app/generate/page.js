@@ -1,8 +1,25 @@
 'use client'
 
+import { db } from "@/firebase"
 import { useUser } from "@clerk/nextjs"
-import { Box, Button, Card, CardActionArea, CardContent, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Paper, TextField, Typography } from "@mui/material"
-import { collection, getDoc, writeBatch } from "firebase/firestore"
+import { 
+    Box, 
+    Button, 
+    Card, 
+    CardActionArea, 
+    CardContent, 
+    Container, 
+    Dialog, 
+    DialogActions, 
+    DialogContent, 
+    DialogContentText, 
+    DialogTitle, 
+    Grid,
+    Paper, 
+    TextField, 
+    Typography 
+} from "@mui/material"
+import { doc, collection, setDoc, getDoc, writeBatch } from "firebase/firestore"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
@@ -63,8 +80,8 @@ export default function Generate(){
 
         const colRef = collection(userDocRef, name)
         flashcards.forEach((flashcard) => {
-            const cardRocRef = doc(colRef)
-            batch.set(cardRocRef, flashcard)
+            const cardDocRef = doc(colRef)
+            batch.set(cardDocRef, flashcard)
         })
 
         await batch.commit()
