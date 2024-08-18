@@ -1,10 +1,29 @@
+'use client'
 import Image from "next/image";
 import getStripe from "@/utils/get-stripe";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import { AppBar, Container, Toolbar, Typography, Button, Box, Grid } from "@mui/material";
+import { useState } from 'react';
+import { SignedIn, SignedOut, UserButton, useAuth } from "@clerk/nextjs";
+import { AppBar, Container, Toolbar, Typography, Button, Box, Grid, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import { useRouter } from "next/navigation"
 import Head from "next/head";
 
 export default function Home() {
+  const router = useRouter();
+  const [openDialog, setOpenDialog] = useState(false);
+  const { isSignedIn } = useAuth();
+
+  const handleGetStarted = () => {
+    if (isSignedIn) {
+      router.push('/generate');
+    } else {
+      setOpenDialog(true);
+    }
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
   return (
     <Container maxWidth="100vw">
       <Head>
@@ -46,7 +65,7 @@ export default function Home() {
             {' '}
             The easiest way to make flashcards from your text
         </Typography>
-        <Button variant="contained" color="primary" sx={{mt: 2}}>
+        <Button variant="contained" color="primary" sx={{mt: 2}} onClick={handleGetStarted}>
           Get Started
         </Button>
       </Box>
@@ -86,6 +105,23 @@ export default function Home() {
           </Grid>
         </Grid>
       </Box>
+      
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+      >
+        <DialogTitle>{"Access Restricted"}</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">
+            You need to be logged in or signed up to access this feature.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   )
 }
