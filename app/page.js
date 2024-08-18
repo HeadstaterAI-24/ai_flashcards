@@ -5,18 +5,18 @@
  */
 
 'use client'
-import Image from "next/image";
-import { useState, useEffect } from 'react';
-import { SignedIn, SignedOut, useAuth, UserButton } from "@clerk/nextjs";
-import { AppBar, Container, Toolbar, Typography, Button, Box, Grid, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
-import { useRouter } from "next/navigation";
+import { Container, Box, Typography, Grid, Button } from "@mui/material";
 import Head from "next/head";
+import Navbar from "./components/Navbar";  // Corrected relative path
+import { useRouter } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
+import { useState, useEffect } from "react";
+import Link from "next/link";  // Import Link to make the title clickable
 
 export default function Home() {
   const router = useRouter();
-  const [openDialog, setOpenDialog] = useState(false);
-  const { isSignedIn } = useAuth();
   const [buttonText, setButtonText] = useState("Get Started");
+  const { isSignedIn } = useAuth();
 
   useEffect(() => {
     if (isSignedIn) {
@@ -41,39 +41,22 @@ export default function Home() {
         <meta name="description" content="Create flashcards from your text" />
       </Head>
 
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" style={{ flexGrow: 1 }}>
-            AI Flashcards
-          </Typography>
-          <SignedOut>
-            <Button color="inherit" href="/sign-in">
-              Login
-            </Button>
-            <Button color="inherit" href="/sign-up">
-              Sign Up
-            </Button>
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
-        </Toolbar>
-      </AppBar>
+      <Navbar />  {/* Include Navbar */}
 
-      <Box
-        sx={{
-          textAlign: 'center',
-          my: 4
-        }}
-      >
+      <Box sx={{ textAlign: 'center', my: 4 }}>
         <Typography variant="h2" gutterBottom>
-          Welcome to AI Flashcards
+          <Link href="/" passHref style={{ color: 'inherit', textDecoration: 'none' }}>
+            AI Flashcards
+          </Link>
         </Typography>
         <Typography variant="h5" gutterBottom>
           The easiest way to make flashcards from your text
         </Typography>
-        <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleGetStarted}>
+        <Button variant="contained" color="primary" sx={{ mt: 2, mr: 2 }} onClick={handleGetStarted}>
           {buttonText}
+        </Button>
+        <Button variant="contained" color="secondary" sx={{ mt: 2 }} href="/flashcards">
+          Flashcards
         </Button>
       </Box>
       <Box sx={{ my: 6 }}>

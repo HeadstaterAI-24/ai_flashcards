@@ -5,3 +5,19 @@
   padding: 0;
   margin: 0;
 }
+
+/* Navbar component's sx prop */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #1976d2;
+  color: white;
+}
+button:hover {
+  background-color: #1976d2;
+  transition: background-color 0.3s ease-in-out;
+}
+
+
