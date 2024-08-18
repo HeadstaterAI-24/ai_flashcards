@@ -5,13 +5,13 @@
  */
 
 'use client'
+
 import { Container, Box, Typography, Grid, Button } from "@mui/material";
 import Head from "next/head";
-import Navbar from "./components/Navbar";  // Corrected relative path
+import Navbar from "./components/Navbar";  // Ensure correct relative path
 import { useRouter } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
-import Link from "next/link";  // Import Link to make the title clickable
 
 export default function Home() {
   const router = useRouter();
@@ -37,7 +37,7 @@ export default function Home() {
   return (
     <Container maxWidth="100vw">
       <Head>
-        <title>AI Flashcards</title>
+        <title>FlashGenius</title>
         <meta name="description" content="Create flashcards from your text" />
       </Head>
 
@@ -45,18 +45,13 @@ export default function Home() {
 
       <Box sx={{ textAlign: 'center', my: 4 }}>
         <Typography variant="h2" gutterBottom>
-          <Link href="/" passHref style={{ color: 'inherit', textDecoration: 'none' }}>
-            AI Flashcards
-          </Link>
+          Welcome to FlashGenius
         </Typography>
         <Typography variant="h5" gutterBottom>
           The easiest way to make flashcards from your text
         </Typography>
         <Button variant="contained" color="primary" sx={{ mt: 2, mr: 2 }} onClick={handleGetStarted}>
           {buttonText}
-        </Button>
-        <Button variant="contained" color="secondary" sx={{ mt: 2 }} href="/flashcards">
-          Flashcards
         </Button>
       </Box>
       <Box sx={{ my: 6 }}>
