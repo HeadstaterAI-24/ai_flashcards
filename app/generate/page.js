@@ -1,3 +1,5 @@
+// File: PROJECT-4/ai_flashcards/app/generate/page.js
+
 'use client'
 
 import { db } from "@/firebase"

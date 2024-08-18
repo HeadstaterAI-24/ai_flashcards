@@ -1,3 +1,6 @@
+// File: PROJECT-4/ai_flashcards/app/flashcard/page.js
+
+
 'use client'
 
 import { useUser } from "@clerk/nextjs"

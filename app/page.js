@@ -1,27 +1,37 @@
+/**
+ * 
+  File: PROJECT-4/ai_flashcards/app/page.js
+  * The Home page for the AI Flashcards application.
+ */
+
 'use client'
 import Image from "next/image";
-import getStripe from "@/utils/get-stripe";
-import { useState } from 'react';
-import { SignedIn, SignedOut, UserButton, useAuth } from "@clerk/nextjs";
+import { useState, useEffect } from 'react';
+import { SignedIn, SignedOut, useAuth, UserButton } from "@clerk/nextjs";
 import { AppBar, Container, Toolbar, Typography, Button, Box, Grid, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation";
 import Head from "next/head";
 
 export default function Home() {
   const router = useRouter();
   const [openDialog, setOpenDialog] = useState(false);
   const { isSignedIn } = useAuth();
+  const [buttonText, setButtonText] = useState("Get Started");
+
+  useEffect(() => {
+    if (isSignedIn) {
+      setButtonText("Generate Flashcards");
+    } else {
+      setButtonText("Get Started");
+    }
+  }, [isSignedIn]);
 
   const handleGetStarted = () => {
     if (isSignedIn) {
       router.push('/generate');
     } else {
-      setOpenDialog(true);
+      router.push('/sign-in');
     }
-  };
-
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
   };
 
   return (
@@ -33,16 +43,14 @@ export default function Home() {
 
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6" style={{flexGrow: 1}}>
+          <Typography variant="h6" style={{ flexGrow: 1 }}>
             AI Flashcards
           </Typography>
           <SignedOut>
             <Button color="inherit" href="/sign-in">
-              {' '}
               Login
             </Button>
             <Button color="inherit" href="/sign-up">
-              {' '}
               Sign Up
             </Button>
           </SignedOut>
@@ -62,15 +70,14 @@ export default function Home() {
           Welcome to AI Flashcards
         </Typography>
         <Typography variant="h5" gutterBottom>
-            {' '}
-            The easiest way to make flashcards from your text
+          The easiest way to make flashcards from your text
         </Typography>
-        <Button variant="contained" color="primary" sx={{mt: 2}} onClick={handleGetStarted}>
-          Get Started
+        <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleGetStarted}>
+          {buttonText}
         </Button>
       </Box>
-      <Box sx={{my: 6}}>
-        <Typography variant="h4" components="h2" gutterBottom>
+      <Box sx={{ my: 6 }}>
+        <Typography variant="h4" component="h2" gutterBottom>
           Features
         </Typography>
         <Grid container spacing={4}>
@@ -79,9 +86,7 @@ export default function Home() {
               Easy Input Text
             </Typography>
             <Typography>
-              {' '}
-              Simply input your text and let our software do the rest. Creating
-              flashcards has never been easier.
+              Simply input your text and let our software do the rest. Creating flashcards has never been easier.
             </Typography>
           </Grid>
           <Grid item xs={12} md={4}>
@@ -89,9 +94,7 @@ export default function Home() {
               Smart Flashcards
             </Typography>
             <Typography>
-              {' '}
-              Our AI intelligently breaks down our text into concise
-              flashcards, perfect for studying.
+              Our AI intelligently breaks down our text into concise flashcards, perfect for studying.
             </Typography>
           </Grid>
           <Grid item xs={12} md={4}>
@@ -99,29 +102,11 @@ export default function Home() {
               Accessible Anywhere
             </Typography>
             <Typography>
-              {' '}
               Access your flashcards from any device, at any time. Study on the go with ease.
             </Typography>
           </Grid>
         </Grid>
       </Box>
-      
-      <Dialog
-        open={openDialog}
-        onClose={handleCloseDialog}
-      >
-        <DialogTitle>{"Access Restricted"}</DialogTitle>
-        <DialogContent>
-          <Typography variant="body1">
-            You need to be logged in or signed up to access this feature.
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} color="primary">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Container>
-  )
+  );
 }

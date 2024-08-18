@@ -1,3 +1,6 @@
+// File: PROJECT-4/ai_flashcards/app/flashcards/page.js
+
+
 'use client'
 import { useUser } from "@clerk/nextjs"
 import { useEffect, useState } from "react"

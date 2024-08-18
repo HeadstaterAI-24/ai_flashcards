@@ -1,3 +1,5 @@
+// File: PROJECT-4/ai_flashcards/app/sign-up/page.js
+
 import { SignIn, SignUp } from "@clerk/nextjs";
 import { AppBar, Box, Container, Toolbar, Typography, Button } from "@mui/material";
 import Link from "next/link";
