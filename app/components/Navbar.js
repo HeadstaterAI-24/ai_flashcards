@@ -1,10 +1,22 @@
 // File: PROJECT-4/ai_flashcards/app/components/Navbar.js
 
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, useAuth, UserButton } from "@clerk/nextjs";
 import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
+  const { isSignedIn } = useAuth();
+  const router = useRouter();
+
+  const handleFlashcardsClick = () => {
+    if (isSignedIn) {
+      router.push('/flashcards');
+    } else {
+      router.push('/sign-in');
+    }
+  };
+
   return (
     <Box sx={{ width: '100%' }}>
       <AppBar
@@ -34,10 +46,8 @@ export default function Navbar() {
               </Link>
             </Button>
             <Box sx={{ borderLeft: '1px solid white', height: '24px', marginX: '0.5rem' }} />
-            <Button sx={{ color: 'white', textDecoration: 'none' }}>
-              <Link href="/flashcards" passHref style={{ color: 'inherit', textDecoration: 'none' }}>
+            <Button sx={{ color: 'white', textDecoration: 'none' }} onClick={handleFlashcardsClick}>
                 Flashcards
-              </Link>
             </Button>
             <Box sx={{ borderLeft: '1px solid white', height: '24px', marginX: '0.5rem' }} />
             <SignedOut>
