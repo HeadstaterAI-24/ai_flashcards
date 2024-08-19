@@ -3,7 +3,7 @@
 'use client'
 
 import { db } from "@/firebase";  // Import Firebase DB
-import { useUser } from "@clerk/nextjs";  // Clerk for user authentication
+import { useAuth, useUser } from "@clerk/nextjs";  // Clerk for user authentication
 import { 
     Box, 
     Button, 
@@ -27,13 +27,18 @@ import { doc, collection, setDoc, getDoc, writeBatch } from "firebase/firestore"
 import Navbar from "../components/Navbar";  // Navbar component
 
 export default function Generate(){
-    const { isLoaded, isSignedIn, user } = useUser();
+    const { isSignedIn } = useAuth();    
+    const { user } = useUser();
     const [flashcards, setFlashcards] = useState([]);
     const [flipped, setFlipped] = useState([]);
     const [text, setText] = useState('');
     const [name, setName] = useState('');
     const [open, setOpen] = useState(false);
     const router = useRouter();
+
+    if (!isSignedIn) {
+        router.push('/');
+      }
 
     const handleSubmit = async () => {
         fetch('api/generate', {
