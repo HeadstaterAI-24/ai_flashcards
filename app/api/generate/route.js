@@ -1,3 +1,6 @@
+// File: PROJECT-4/ai_flashcards/app/api/generate/route.js
+
+
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 

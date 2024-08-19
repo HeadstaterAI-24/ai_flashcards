@@ -1,7 +1,9 @@
+// File: PROJECT-4/ai_flashcards/app/generate/page.js
+
 'use client'
 
-import { db } from "@/firebase"
-import { useUser } from "@clerk/nextjs"
+import { db } from "@/firebase";  // Import Firebase DB
+import { useUser } from "@clerk/nextjs";  // Clerk for user authentication
 import { 
     Box, 
     Button, 
@@ -18,79 +20,84 @@ import {
     Paper, 
     TextField, 
     Typography 
-} from "@mui/material"
-import { doc, collection, setDoc, getDoc, writeBatch } from "firebase/firestore"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
+} from "@mui/material";  // Import all necessary Material UI components
+import { useRouter } from "next/navigation";  // Navigation hook from Next.js
+import { useState } from "react";  // React state management
+import { doc, collection, setDoc, getDoc, writeBatch } from "firebase/firestore";  // Firestore operations
+import Navbar from "../components/Navbar";  // Navbar component
 
 export default function Generate(){
-    const {isLoaded, isSignedIn, user} = useUser()
-    const [flashcards, setFlashcards] = useState([])
-    const [flipped, setFlipped] = useState([])
-    const [text, setText] = useState('')
-    const [name, setName] = useState('')
-    const [open, setOpen] = useState(false)
-    const router = useRouter()
+    const { isLoaded, isSignedIn, user } = useUser();
+    const [flashcards, setFlashcards] = useState([]);
+    const [flipped, setFlipped] = useState([]);
+    const [text, setText] = useState('');
+    const [name, setName] = useState('');
+    const [open, setOpen] = useState(false);
+    const router = useRouter();
 
     const handleSubmit = async () => {
         fetch('api/generate', {
             method: 'POST',
             body: text,
-        }).then((res)=> res.json()).then((data) => setFlashcards(data))
-    }
+        }).then((res) => res.json()).then((data) => {
+            setFlashcards(data);
+            setFlipped(Array(data.length).fill(false));  // Initialize flip state to false for all flashcards
+        });
+    };
 
-    const handleCardClick = (id) => {
-        setFlipped((prev) => ({
-            ...prev,
-            [id]: !prev[id],
-        }))
-    }
+    const handleCardClick = (index) => {
+        setFlipped((prev) => {
+            const newFlipped = [...prev];
+            newFlipped[index] = !newFlipped[index];
+            return newFlipped;
+        });
+    };
 
     const handleOpen = () => {
-        setOpen(true)
-    }
+        setOpen(true);
+    };
 
     const handleClose = () => {
-        setOpen(false)
-    }
+        setOpen(false);
+    };
 
     const saveFlashcards = async () => {
         if (!name) {
-            alert('Please enter a name')
-            return 
+            alert('Please enter a name');
+            return;
         }
 
-        const batch = writeBatch(db)
-        const userDocRef = doc(collection(db, 'users'), user.id)
-        const docSnap = await getDoc(userDocRef)
+        const batch = writeBatch(db);
+        const userDocRef = doc(collection(db, 'users'), user.id);
+        const docSnap = await getDoc(userDocRef);
 
         if (docSnap.exists()) {
-            const collections = docSnap.data().flashcards || []
-            if (collections.find((f)=> f.name === name)) {
-                alert("Flashcard collection with the same name already exists.")
-                return
-            }
-            else {
-                collections.push({name})
-                batch.set(userDocRef, {flashcards: collections}, {merge: true})
+            const collections = docSnap.data().flashcards || [];
+            if (collections.find((f) => f.name === name)) {
+                alert("Flashcard collection with the same name already exists.");
+                return;
+            } else {
+                collections.push({ name });
+                batch.set(userDocRef, { flashcards: collections }, { merge: true });
             }
         } else {
-            batch.set(userDocRef, {flashcards: [{name}]})
+            batch.set(userDocRef, { flashcards: [{ name }] });
         }
 
-        const colRef = collection(userDocRef, name)
+        const colRef = collection(userDocRef, name);
         flashcards.forEach((flashcard) => {
-            const cardDocRef = doc(colRef)
-            batch.set(cardDocRef, flashcard)
-        })
+            const cardDocRef = doc(colRef);
+            batch.set(cardDocRef, flashcard);
+        });
 
-        await batch.commit()
-        handleClose()
-        router.push('/flashcards')
-    }
+        await batch.commit();
+        handleClose();
+        router.push('/flashcards');
+    };
 
     return (
         <Container maxWidth="md">
+            <Navbar />
             <Box
                 sx={{
                     mt: 4, 
@@ -101,7 +108,7 @@ export default function Generate(){
                 }}
             >
                 <Typography variant="h4">Generate Flashcards</Typography>   
-                <Paper sx={{p: 4, width: '100%'}}>
+                <Paper sx={{ p: 4, width: '100%' }}>
                     <TextField 
                         value={text} 
                         onChange={(e) => setText(e.target.value)}
@@ -110,10 +117,7 @@ export default function Generate(){
                         multiline
                         rows={4}
                         variant="outlined"
-                        sx={{
-                            mb: 2,
-
-                        }}
+                        sx={{ mb: 2 }}
                     />
                     <Button
                         variant="contained"
@@ -121,23 +125,20 @@ export default function Generate(){
                         onClick={handleSubmit}
                         fullWidth
                     >
-                        {' '}
                         Submit
                     </Button>
                 </Paper>
             </Box>
 
             {flashcards.length > 0 && (
-                <Box sx={{mt: 4}}>
+                <Box sx={{ mt: 4 }}>
                     <Typography variant="h5">Flashcards Preview</Typography>
                     <Grid container spacing={3}>
                         {flashcards.map((flashcard, index) => (
-                            <Grid item xs = {12} sm = {6} md={4} key = {index}>
+                            <Grid item xs={12} sm={6} md={4} key={index}>
                                 <Card>
                                     <CardActionArea
-                                        onClick={() => {
-                                            handleCardClick(index)
-                                        }}
+                                        onClick={() => handleCardClick(index)}
                                     >
                                         <CardContent>
                                             <Box
@@ -164,6 +165,7 @@ export default function Generate(){
                                                         alignItems: 'center',
                                                         padding: 2,
                                                         boxSizing: 'border-box',
+                                                        overflowY: 'auto',  // Allow scrolling if text overflows
                                                     },
                                                     '& > div > div:nth-of-type(2)': {
                                                         transform: 'rotateY(180deg)',
@@ -230,5 +232,5 @@ export default function Generate(){
                 </DialogActions>
             </Dialog>
         </Container>
-    )
+    );
 }
