@@ -15,17 +15,17 @@ export default function SignUpPage(){
                             flexGrow: 1,
                         }}
                     >
-                        AI Flashcards
+                        FlashGenius
                     </Typography>
-                    <Button color="inherit">
-                        <Link href="/sign-in" passHref>
-                            Login
-                        </Link>
+                    <Button sx={{ color: 'white', textDecoration: 'none' }}>
+                      <Link href="/sign-in" passHref style={{ color: 'inherit', textDecoration: 'none' }}>
+                        Login
+                      </Link>
                     </Button>
-                    <Button color="inherit">
-                        <Link href="/sign-up" passHref>
-                            Sign Up
-                        </Link>
+                    <Button sx={{ color: 'white', textDecoration: 'none' }}>
+                      <Link href="/sign-up" passHref style={{ color: 'inherit', textDecoration: 'none' }}>
+                        Sign Up
+                      </Link>
                     </Button>
                 </Toolbar>
             </AppBar>

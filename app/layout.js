@@ -15,7 +15,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "AI Flashcards",
+  title: "FlashGenius",
   description: "Create flashcards from your text",
 };
 
