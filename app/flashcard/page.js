@@ -8,6 +8,8 @@ import { useEffect, useState } from "react"
 import { collection, doc, getDoc, getDocs } from "firebase/firestore"
 import { db } from "@/firebase"
 import { useSearchParams } from "next/navigation"
+import Navbar from "../components/Navbar";
+
 import { 
     Box, 
     Button, 
@@ -62,6 +64,7 @@ export default function Flashcard(){
 
     return (
         <Container maxWidth="100vw">
+            <Navbar />  {/* Include Navbar at the top */}
             <Grid container spacing={3} sx={{mt: 4}}>
                 {flashcards.map((flashcard, index) => (
                     <Grid item xs={12} sm={6} md={4} key={index}>
