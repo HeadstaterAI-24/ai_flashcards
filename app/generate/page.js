@@ -101,43 +101,47 @@ export default function Generate(){
     };
 
     return (
-        <Container maxWidth="md">
+        <Container maxWidth="100vw">
             <Navbar />
-            <Box
-                sx={{
-                    mt: 4, 
-                    mb: 6, 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    alignItems: 'center'
-                }}
-            >
-                <Typography variant="h4">Generate Flashcards</Typography>   
-                <Paper sx={{ p: 4, width: '100%' }}>
-                    <TextField 
-                        value={text} 
-                        onChange={(e) => setText(e.target.value)}
-                        label="Enter text"
-                        fullWidth
-                        multiline
-                        rows={4}
-                        variant="outlined"
-                        sx={{ mb: 2 }}
-                    />
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleSubmit}
-                        fullWidth
+            <Grid container justifyContent="center" sx={{ mt: 4, mb: 6 }}>
+                <Grid item xs={12} md={8}>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center'
+                        }}
                     >
-                        Submit
-                    </Button>
-                </Paper>
-            </Box>
+                        <Typography variant="h4">Generate Flashcards</Typography>   
+                        <Paper sx={{ p: 4, width: '100%' }}>
+                            <TextField 
+                                value={text} 
+                                onChange={(e) => setText(e.target.value)}
+                                label="Enter text"
+                                fullWidth
+                                multiline
+                                rows={4}
+                                variant="outlined"
+                                sx={{ mb: 2 }}
+                            />
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={handleSubmit}
+                                fullWidth
+                            >
+                                Submit
+                            </Button>
+                        </Paper>
+                    </Box>
+                </Grid>
+            </Grid>
 
             {flashcards.length > 0 && (
                 <Box sx={{ mt: 4 }}>
-                    <Typography variant="h5">Flashcards Preview</Typography>
+                    <Box sx={{ textAlign: 'center', mb: 3 }}>
+                        <Typography variant="h4">Flashcards Preview</Typography>
+                    </Box>
                     <Grid container spacing={3}>
                         {flashcards.map((flashcard, index) => (
                             <Grid item xs={12} sm={6} md={4} key={index}>

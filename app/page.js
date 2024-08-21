@@ -54,13 +54,13 @@ export default function Home() {
           {buttonText}
         </Button>
       </Box>
-      <Box sx={{ my: 6 }}>
-        <Typography variant="h4" component="h2" gutterBottom>
+      <Box sx={{ textAlign: 'center', my: 6 }}>
+        <Typography variant="h3" component="h2" gutterBottom>
           Features
         </Typography>
         <Grid container spacing={4}>
           <Grid item xs={12} md={4}>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h5" gutterBottom>
               Easy Input Text
             </Typography>
             <Typography>
@@ -68,7 +68,7 @@ export default function Home() {
             </Typography>
           </Grid>
           <Grid item xs={12} md={4}>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h5" gutterBottom>
               Smart Flashcards
             </Typography>
             <Typography>
@@ -76,7 +76,7 @@ export default function Home() {
             </Typography>
           </Grid>
           <Grid item xs={12} md={4}>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h5" gutterBottom>
               Accessible Anywhere
             </Typography>
             <Typography>
