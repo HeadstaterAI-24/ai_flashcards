@@ -12,6 +12,7 @@ import Navbar from "./components/Navbar";  // Ensure correct relative path
 import { useRouter } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
+import getStripe from "@/utils/get-stripe";
 
 export default function Home() {
   const router = useRouter();
@@ -33,6 +34,31 @@ export default function Home() {
       router.push('/sign-in');
     }
   };
+
+  const handleSubmit = async ()=> {
+    const checkoutSession = await fetch('/api/checkout_session', {
+      method: 'POST',
+      headers: {
+        origin: 'https://localhost:3000',
+      }
+    })
+
+    const checkoutSessionJson = await checkoutSession.json()
+
+    if (checkoutSession.statusCode === 500) {
+      console.error(checkoutSession.message)
+      return
+    }
+
+    const stripe = await getStripe()
+    const {error} = await stripe.redirectToCheckout({
+      sessionId: checkoutSessionJson.id,
+    })
+
+    if (error){
+      console.warn(error.message)
+    }
+  }
 
   return (
     <Container maxWidth="100vw">
@@ -82,6 +108,69 @@ export default function Home() {
             <Typography>
               Access your flashcards from any device, at any time. Study on the go with ease.
             </Typography>
+          </Grid>
+        </Grid>
+      </Box>
+      <Box sx={{my: 6, textAlign: 'center'}}>
+        <Typography variant="h4" gutterBottom>
+          Pricing
+        </Typography>
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={6}>
+            <Box 
+              sx={{
+                p: 3,
+                border: '1px solid',
+                borderColor: 'grey.300',
+                borderRadius: 2,
+              }}  
+            >
+              <Typography variant="h5" gutterBottom>
+                Basic
+              </Typography>
+              <Typography variant="h6" gutterBottom>
+                Free
+              </Typography>
+              <Typography>
+                {' '}
+                Limited storage up to 5 flashcards.
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={6}>
+          <Box 
+              sx={{
+                p: 3,
+                border: '1px solid',
+                borderColor: 'grey.300',
+                borderRadius: 2,
+              }}  
+            >
+              <Typography variant="h5" gutterBottom>
+                Pro
+              </Typography>
+              <Typography variant="h6" gutterBottom>
+                $10 / Month
+              </Typography>
+              <Typography>
+                {' '}
+                Unlimited flashcards and storage, with priority support.
+              </Typography>
+              <Button 
+                variant="contained" 
+                color="primary" 
+                sx={{mt: 2}} 
+                onClick={() => {
+                  if (isSignedIn) {
+                    handleSubmit()
+                  } else {
+                    router.push('/sign-in')
+                  }
+                }}
+              >
+                Choose Pro
+              </Button>
+            </Box>
           </Grid>
         </Grid>
       </Box>
