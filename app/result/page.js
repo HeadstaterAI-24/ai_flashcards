@@ -115,6 +115,16 @@ const ResultPage = ()=> {
                             <Typography variant="body1">
                                 Your payment was not successful. Please try again.
                             </Typography>
+                            <Button 
+                                variant="contained" 
+                                color="primary" 
+                                sx={{mt: 2}} 
+                                onClick={() => {
+                                    router.push('/')
+                                }}
+                            >
+                                Home
+                            </Button>
                         </Box>
                     </>
                 )
