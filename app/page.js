@@ -6,18 +6,27 @@
 
 'use client'
 
-import { Container, Box, Typography, Grid, Button } from "@mui/material";
+import { Container, Box, Typography, Grid, Button, Snackbar, Alert } from "@mui/material";
 import Head from "next/head";
 import Navbar from "./components/Navbar";  // Ensure correct relative path
 import { useRouter } from "next/navigation";
-import { useAuth } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
 import getStripe from "@/utils/get-stripe";
 
 export default function Home() {
   const router = useRouter();
   const [buttonText, setButtonText] = useState("Get Started");
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, user } = useUser();
+  const [openAlert, setAlertOpen] = useState(false);
+
+  const handleAlertOpen = () => {
+    setAlertOpen(true);
+  };
+
+  const handleAlertClose = () => {
+      setAlertOpen(false);
+  };
 
   useEffect(() => {
     if (isSignedIn) {
@@ -133,7 +142,7 @@ export default function Home() {
               </Typography>
               <Typography>
                 {' '}
-                Limited storage up to 5 flashcards.
+                Limited storage up to 5 flashcard collections.
               </Typography>
             </Box>
           </Grid>
@@ -162,7 +171,12 @@ export default function Home() {
                 sx={{mt: 2}} 
                 onClick={() => {
                   if (isSignedIn) {
-                    handleSubmit()
+                    if (user.publicMetadata.isPro === undefined) {
+                      handleSubmit() 
+                    }
+                    else {
+                      handleAlertOpen()
+                    }
                   } else {
                     router.push('/sign-in')
                   }
@@ -174,6 +188,12 @@ export default function Home() {
           </Grid>
         </Grid>
       </Box>
+
+      <Snackbar open={openAlert} onClose={handleAlertClose}>
+                <Alert onClose={handleAlertClose} severity="info">
+                    This user already has a Pro subscription.
+                </Alert>
+            </Snackbar>
     </Container>
   );
 }

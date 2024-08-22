@@ -5,6 +5,7 @@
 import { db } from "@/firebase";  // Import Firebase DB
 import { useAuth, useUser } from "@clerk/nextjs";  // Clerk for user authentication
 import { 
+    Alert,
     Box, 
     Button, 
     Card, 
@@ -18,6 +19,7 @@ import {
     DialogTitle, 
     Grid,
     Paper, 
+    Snackbar, 
     TextField, 
     Typography 
 } from "@mui/material";  // Import all necessary Material UI components
@@ -33,7 +35,9 @@ export default function Generate(){
     const [flipped, setFlipped] = useState([]);
     const [text, setText] = useState('');
     const [name, setName] = useState('');
-    const [open, setOpen] = useState(false);
+    const [openDialog, setDialogOpen] = useState(false);
+    const [openAlert, setAlertOpen] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
     const router = useRouter();
 
     if (!isSignedIn) {
@@ -58,12 +62,20 @@ export default function Generate(){
         });
     };
 
-    const handleOpen = () => {
-        setOpen(true);
+    const handleDialogOpen = () => {
+        setDialogOpen(true);
     };
 
-    const handleClose = () => {
-        setOpen(false);
+    const handleDialogClose = () => {
+        setDialogOpen(false);
+    };
+
+    const handleAlertOpen = () => {
+        setAlertOpen(true);
+    };
+
+    const handleAlertClose = () => {
+        setAlertOpen(false);
     };
 
     const saveFlashcards = async () => {
@@ -78,8 +90,17 @@ export default function Generate(){
 
         if (docSnap.exists()) {
             const collections = docSnap.data().flashcards || [];
+            const totalFlashcards = collections.length
+
+            if (user.publicMetadata.isPro === undefined && totalFlashcards >= 5) {
+                setAlertMessage('Only Pro subscribers can have more than 5 flashcard collections. Upgrade to Pro to unlock unlimited flashcards.');
+                handleAlertOpen()
+                return;
+            }
+
             if (collections.find((f) => f.name === name)) {
-                alert("Flashcard collection with the same name already exists.");
+                setAlertMessage("Flashcard collection with the same name already exists.");
+                handleAlertOpen()
                 return;
             } else {
                 collections.push({ name });
@@ -96,7 +117,7 @@ export default function Generate(){
         });
 
         await batch.commit();
-        handleClose();
+        handleDialogClose();
         router.push('/flashcards');
     };
 
@@ -210,7 +231,7 @@ export default function Generate(){
                         <Button
                             variant="contained"
                             color="secondary"
-                            onClick={handleOpen}
+                            onClick={handleDialogOpen}
                         >
                             Save
                         </Button>
@@ -218,7 +239,7 @@ export default function Generate(){
                 </Box>
             )}
 
-            <Dialog open={open} onClose={handleClose}>
+            <Dialog open={openDialog} onClose={handleDialogClose}>
                 <DialogTitle>Save Flashcards</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
@@ -236,10 +257,16 @@ export default function Generate(){
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button onClick={handleDialogClose}>Cancel</Button>
                     <Button onClick={saveFlashcards}>Save</Button>
                 </DialogActions>
             </Dialog>
+
+            <Snackbar open={openAlert} onClose={handleAlertClose}>
+                <Alert onClose={handleAlertClose} severity="info">
+                    {alertMessage}
+                </Alert>
+            </Snackbar>
         </Container>
     );
 }

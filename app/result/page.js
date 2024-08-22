@@ -1,14 +1,16 @@
 'use client'
-import { useEffect, useState } from "react"
+import { use, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import getStripe from "@/utils/get-stripe"
 import { useSearchParams } from "next/navigation"
-import { Box, CircularProgress, Container, Typography } from "@mui/material"
+import { Box, Button, CircularProgress, Container, Typography } from "@mui/material"
+import { useAuth } from "@clerk/nextjs"; // Import Clerk's useAuth
 
 const ResultPage = ()=> {
     const router = useRouter()
     const searchParams = useSearchParams()
     const session_id = searchParams.get('session_id')
+    const { userId } = useAuth(); // Get the authenticated user
 
     const [loading, setLoading] = useState(true)
     const [session, setSession] = useState(null)
@@ -24,6 +26,17 @@ const ResultPage = ()=> {
 
                 if (res.ok) {
                     setSession(sessionData)
+
+                    // If payment is successful, update the user's metadata
+                    if (sessionData.payment_status === "paid") {
+                        await fetch('/api/updateMetadata', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ isPro: true, userId: userId }),
+                        });
+                    }
                 } else {
                     setError(sessionData.error)
                 }
@@ -80,9 +93,19 @@ const ResultPage = ()=> {
                     <>
                     <Typography variant="h4">Thank you for your purchase</Typography>
                     <Box sx={{mt: 22}}>
-                        <Typography variant="body1">
+                        <Typography variant="h6">
                             We have received your payment.
                         </Typography>
+                        <Button 
+                            variant="contained" 
+                            color="primary" 
+                            sx={{mt: 2}} 
+                            onClick={() => {
+                                  router.push('/')
+                              }}
+                        >
+                            Home
+                        </Button>
                     </Box>
                     </>
                 ) : (
