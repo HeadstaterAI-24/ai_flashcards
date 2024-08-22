@@ -4,10 +4,11 @@
 'use client'
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
-import { collection, doc, getDoc, setDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, setDoc, writeBatch } from "firebase/firestore";
 import { db } from "@/firebase";
 import { useRouter } from "next/navigation";
-import { Card, CardActionArea, CardContent, Container, Grid, Typography } from "@mui/material";
+import { Card, CardActionArea, CardContent, Container, Grid, IconButton, Typography } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
 import Navbar from "../components/Navbar";  // Include Navbar on flashcards page
 
 export default function Flashcards() {
@@ -39,6 +40,34 @@ export default function Flashcards() {
         router.push(`/flashcard?id=${id}`);
     };
 
+    const handleDelete = async (name) => {
+        if (!user) return;
+        
+        const userDocRef = doc(collection(db, 'users'), user.id);
+        const docSnap = await getDoc(userDocRef);
+        
+        if (docSnap.exists()) {
+            const collections = docSnap.data().flashcards || [];
+            
+            const updatedCollections = collections.filter((flashcard) => flashcard.name !== name);
+
+            
+            const collectionRef = collection(userDocRef, name);
+            const flashcardSnapshots = await getDocs(collectionRef);
+            const batch = writeBatch(db);
+    
+            flashcardSnapshots.forEach((doc) => {
+                batch.delete(doc.ref);
+            });
+
+            await batch.commit();
+    
+            await setDoc(userDocRef, { flashcards: updatedCollections }, { merge: true });
+
+            setFlashcards(updatedCollections);
+        }
+    };
+
     return (
         <Container maxWidth="100vw">
             <Navbar />  {/* Include Navbar at the top */}
@@ -58,6 +87,15 @@ export default function Flashcards() {
                             >
                                 <CardContent>
                                     <Typography variant="h6">{flashcard.name}</Typography>
+                                    <IconButton
+                                        sx={{ position: 'absolute', top: 8, right: 8 }}
+                                        onClick={(e) => {
+                                            e.stopPropagation(); // Prevent triggering the card click event
+                                            handleDelete(flashcard.name);
+                                        }}
+                                    >
+                                        <DeleteIcon />
+                                    </IconButton>
                                 </CardContent>
                             </CardActionArea>
                         </Card>
