@@ -6,17 +6,27 @@
 
 'use client'
 
-import { Container, Box, Typography, Grid, Button } from "@mui/material";
+import { Container, Box, Typography, Grid, Button, Snackbar, Alert } from "@mui/material";
 import Head from "next/head";
 import Navbar from "./components/Navbar";  // Ensure correct relative path
 import { useRouter } from "next/navigation";
-import { useAuth } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
+import getStripe from "@/utils/get-stripe";
 
 export default function Home() {
   const router = useRouter();
   const [buttonText, setButtonText] = useState("Get Started");
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, user } = useUser();
+  const [openAlert, setAlertOpen] = useState(false);
+
+  const handleAlertOpen = () => {
+    setAlertOpen(true);
+  };
+
+  const handleAlertClose = () => {
+      setAlertOpen(false);
+  };
 
   useEffect(() => {
     if (isSignedIn) {
@@ -33,6 +43,31 @@ export default function Home() {
       router.push('/sign-in');
     }
   };
+
+  const handleSubmit = async ()=> {
+    const checkoutSession = await fetch('/api/checkout_session', {
+      method: 'POST',
+      headers: {
+        origin: 'https://localhost:3000',
+      }
+    })
+
+    const checkoutSessionJson = await checkoutSession.json()
+
+    if (checkoutSession.statusCode === 500) {
+      console.error(checkoutSession.message)
+      return
+    }
+
+    const stripe = await getStripe()
+    const {error} = await stripe.redirectToCheckout({
+      sessionId: checkoutSessionJson.id,
+    })
+
+    if (error){
+      console.warn(error.message)
+    }
+  }
 
   return (
     <Container maxWidth="100vw">
@@ -85,6 +120,80 @@ export default function Home() {
           </Grid>
         </Grid>
       </Box>
+      <Box sx={{my: 6, textAlign: 'center'}}>
+        <Typography variant="h4" gutterBottom>
+          Pricing
+        </Typography>
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={6}>
+            <Box 
+              sx={{
+                p: 3,
+                border: '1px solid',
+                borderColor: 'grey.300',
+                borderRadius: 2,
+              }}  
+            >
+              <Typography variant="h5" gutterBottom>
+                Basic
+              </Typography>
+              <Typography variant="h6" gutterBottom>
+                Free
+              </Typography>
+              <Typography>
+                {' '}
+                Limited storage up to 5 flashcard collections.
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={6}>
+          <Box 
+              sx={{
+                p: 3,
+                border: '1px solid',
+                borderColor: 'grey.300',
+                borderRadius: 2,
+              }}  
+            >
+              <Typography variant="h5" gutterBottom>
+                Pro
+              </Typography>
+              <Typography variant="h6" gutterBottom>
+                $10 / Month
+              </Typography>
+              <Typography>
+                {' '}
+                Unlimited flashcards and storage, with priority support.
+              </Typography>
+              <Button 
+                variant="contained" 
+                color="primary" 
+                sx={{mt: 2}} 
+                onClick={() => {
+                  if (isSignedIn) {
+                    if (user.publicMetadata.isPro === undefined) {
+                      handleSubmit() 
+                    }
+                    else {
+                      handleAlertOpen()
+                    }
+                  } else {
+                    router.push('/sign-in')
+                  }
+                }}
+              >
+                Choose Pro
+              </Button>
+            </Box>
+          </Grid>
+        </Grid>
+      </Box>
+
+      <Snackbar open={openAlert} onClose={handleAlertClose}>
+                <Alert onClose={handleAlertClose} severity="info">
+                    This user already has a Pro subscription.
+                </Alert>
+            </Snackbar>
     </Container>
   );
 }
