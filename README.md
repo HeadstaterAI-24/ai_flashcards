@@ -1,36 +1,23 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# FlashGenius
 
-## Getting Started
+Welcome to FlashGenius! This project is designed to help users create, manage, and study flashcards.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Flashcard Creation and Management: Users can create and manage their flashcards with ease.
+- AI-Powered Flashcards: Integration with OpenAI allows for the generation of flashcards based on user-provided content.
+- User Authentication: Secure user authentication is handled by Clerk, ensuring a smooth and secure login experience.
+- Pro Subscription: Users can subscribe to a Pro plan via Stripe to unlock unlimited flashcards and storage.
+    - Pay for a Pro subscription using a [**test card**](https://docs.stripe.com/testing).
+- Database Management: Firebase is used to store user information, including their flashcard collections.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Technologies Used
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+- Next.js: A React framework for building server-side rendered applications.
+- Clerk: Handles user authentication and authorization.
+- Firebase: A real-time NoSQL database to store user data and flashcard collections.
+- OpenAI: Powers the AI-driven flashcard generation.
+- Stripe: Integrates the Pro subscription model, handling payments and subscriptions.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Vercel App Link
+[https://flash-genius-pi.vercel.app/](https://flash-genius-pi.vercel.app/)
