@@ -10,15 +10,23 @@ import { Container, Box, Typography, Grid, Button, Snackbar, Alert } from "@mui/
 import Head from "next/head";
 import Navbar from "./components/Navbar";  // Ensure correct relative path
 import { useRouter } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
+import { useUser, useAuth } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
 import getStripe from "@/utils/get-stripe";
+import { auth } from "@/firebase";
+import { signInWithCustomToken } from "firebase/auth";
 
 export default function Home() {
   const router = useRouter();
   const [buttonText, setButtonText] = useState("Get Started");
   const { isSignedIn, user } = useUser();
+  const { getToken } = useAuth();
   const [openAlert, setAlertOpen] = useState(false);
+
+  const signIntoFirebaseWithClerk = async () => {
+    const token = await getToken({ template: 'integration_firebase' })
+    await signInWithCustomToken(auth, token)
+  }
 
   const handleAlertOpen = () => {
     setAlertOpen(true);
@@ -31,6 +39,7 @@ export default function Home() {
   useEffect(() => {
     if (isSignedIn) {
       setButtonText("Generate Flashcards");
+      signIntoFirebaseWithClerk();
     } else {
       setButtonText("Get Started");
     }
